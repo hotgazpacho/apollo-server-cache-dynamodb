@@ -1,0 +1,45 @@
+{
+  "name": "apollo-server-cache-dynamodb",
+  "version": "1.0.0",
+  "description": "DynamoDB implementation of KeyValueCache for apollo-server-caching",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb"
+  },
+  "keywords": [
+    "apollo-server-caching",
+    "apollo",
+    "dynamodb"
+  ],
+  "author": "Will Green",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb/issues"
+  },
+  "homepage": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb#readme",
+  "dependencies": {
+    "apollo-server-caching": "^0.3.1",
+    "apollo-server-env": "^2.2.0",
+    "aws-sdk": "2"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.14",
+    "@types/node": "^11.9.4",
+    "dynamodb-local": "0.0.25",
+    "eslint": "^5.14.0",
+    "jest": "^23.0.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.3.3"
+  },
+  "jest": {
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node"
+  }
+}
