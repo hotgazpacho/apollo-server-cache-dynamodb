@@ -46,7 +46,8 @@ export default class DynamoDBCache implements KeyValueCache {
     if (options && options.ttl) {
       const expiresAt = new Date();
       expiresAt.setSeconds(expiresAt.getSeconds() + options.ttl);
-      params.Item[this.ttlAttribute] = Math.floor(expiresAt.getTime() / 1000);
+      const epochSeconds = Math.floor(expiresAt.getTime() / 1000);
+      params.Item[this.ttlAttribute] = epochSeconds;
     }
     return this.client
       .put(params)
