@@ -22,10 +22,10 @@ jobs:
           name: Install JUnit coverage reporter
           command: npm install --save-dev jest-junit
       - run:
-        name: Run tests with JUnit as reporter
-        command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit
-        environment:
-          JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
+          name: Run tests with JUnit as reporter
+          command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
   
 workflows:
   version: 2
