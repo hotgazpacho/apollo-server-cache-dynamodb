@@ -41,6 +41,7 @@
       "<rootDir>/src"
     ],
     "preset": "ts-jest",
+    "reporters": ["default", "jest-junit"],
     "setupFiles": [
       "jest-date-mock"
     ],
