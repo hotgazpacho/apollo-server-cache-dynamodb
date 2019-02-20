@@ -33,6 +33,7 @@
     "eslint": "^5.14.0",
     "jest": "^23.0.0",
     "jest-date-mock": "^1.0.7",
+    "jest-junit": "^6.3.0",
     "ts-jest": "^23.10.5",
     "typescript": "^3.3.3"
   },
@@ -41,7 +42,10 @@
       "<rootDir>/src"
     ],
     "preset": "ts-jest",
-    "reporters": ["default", "jest-junit"],
+    "reporters": [
+      "default",
+      "jest-junit"
+    ],
     "setupFiles": [
       "jest-date-mock"
     ],

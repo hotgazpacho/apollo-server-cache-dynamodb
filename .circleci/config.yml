@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_test:
     docker:
       - image: circleci/node:8.10
     steps:
@@ -14,24 +14,12 @@ jobs:
           key: dependency-cache-{{ checksum "package.json" }}
           paths:
             - node_modules
-  test:
-    docker:
-      - image: circleci/node:8.10
-    steps:
-      - run:
-          name: Install JUnit coverage reporter
-          command: npm install --save-dev jest-junit
       - run:
           name: Run tests with JUnit as reporter
           command: npm test -- --ci --runInBand --reporters=default --reporters=jest-junit
           environment:
             JEST_JUNIT_OUTPUT: "reports/junit/js-test-results.xml"
-  
-workflows:
-  version: 2
-  build_and_test:
-    jobs:
-      - build
-      - test:
-          requires:
-            - build
+      - store_test_results:
+          path: reports/junit
+      - store_artifacts:
+          path: reports/junit
