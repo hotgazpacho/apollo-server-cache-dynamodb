@@ -14,9 +14,10 @@ const DynamoDBCache = require('apollo-server-cache-dynamodb');
 const client = new DynamoDB.DocumentClient();
 const cacheOpts = {
   tableName: 'KeyValueCache', // default, table name
-  partitionKeyName: 'CacheKey', //default, partition key, must be type S
-  valueAttribute: 'CacheValue', //default, value attribute, must be type S
-  ttlAttribute: 'CacheTTL', //default, ttl attribute, must be type N
+  partitionKeyName: 'CacheKey', // default, partition key, must be type S
+  valueAttribute: 'CacheValue', // default, value attribute, must be type S
+  ttlAttribute: 'CacheTTL', // default, ttl attribute, must be type N
+  defaultTTL: 300, // default, ttl in seconds
 };
 
 const server = new ApolloServer({

@@ -1,16 +1,12 @@
-import DynamoDBCache from "./index";
-import { KeyValueCache } from "apollo-server-caching";
-import AWS = require("aws-sdk");
-import AWSMock = require('aws-sdk-mock')
-import { advanceBy, advanceTo, clear } from 'jest-date-mock';
+import { KeyValueCache } from 'apollo-server-caching';
+import AWS = require('aws-sdk');
+import AWSMock = require('aws-sdk-mock');
+import { advanceTo, clear } from 'jest-date-mock';
+import DynamoDBCache from './index';
 
 AWSMock.setSDKInstance(AWS);
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-describe("DynamoDBCache", () => {
+describe('DynamoDBCache', () => {
   let keyValueCache: KeyValueCache;
   let client: AWS.DynamoDB.DocumentClient;
 
@@ -18,17 +14,16 @@ describe("DynamoDBCache", () => {
 
   beforeAll(async () => {
     AWS.config.update({
-      accessKeyId: "LOCAL_ACCESS_KEY_ID",
-      secretAccessKey: "LOCAL_SECRET_ACCESS_KEY",
-      region: "local",
+      accessKeyId: 'LOCAL_ACCESS_KEY_ID',
+      secretAccessKey: 'LOCAL_SECRET_ACCESS_KEY',
+      region: 'local',
       dynamodb: {
-        endpoint: "http://localhost:8000"
-      }
+        endpoint: 'http://localhost:8000',
+      },
     });
   });
 
-  describe("basic cache functionality", () => {
-
+  describe('basic cache functionality', () => {
     afterEach(() => {
       AWSMock.restore();
     });
@@ -39,100 +34,104 @@ describe("DynamoDBCache", () => {
           expect(params).toEqual({
             TableName,
             Key: {
-              CacheKey: 'hello'
-            }
-          })
+              CacheKey: 'hello',
+            },
+          });
           callback(null, { Item: { CacheValue: 'world' } });
-        })
+        });
         client = new AWS.DynamoDB.DocumentClient();
         keyValueCache = new DynamoDBCache(client);
-        expect(await keyValueCache.get("hello")).toBe("world");
+        expect(await keyValueCache.get('hello')).toBe('world');
       });
-  
+
       it('returns undefined for a non-existant key', async () => {
         AWSMock.mock('DynamoDB.DocumentClient', 'get', (params, callback) => {
           expect(params).toEqual({
             TableName,
             Key: {
-              CacheKey: 'missing'
-            }
-          })
+              CacheKey: 'missing',
+            },
+          });
           callback(null, {});
-        })
+        });
         client = new AWS.DynamoDB.DocumentClient();
         keyValueCache = new DynamoDBCache(client);
-        expect(await keyValueCache.get("missing")).toBeUndefined();
+        expect(await keyValueCache.get('missing')).toBeUndefined();
       });
-    })
+    });
 
     describe('set', () => {
-      it('can do a basic set', async () => {
+      afterEach(() => {
+        clear();
+      });
+
+      it('can do a basic set with the default ttl', async () => {
+        const now = new Date(2019, 2, 20, 12, 0, 0);
+        const ttl = new Date(2019, 2, 20, 12, 5);
+        advanceTo(now);
         AWSMock.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
           const Item = {
             CacheKey: 'hello',
-            CacheValue: 'world'
+            CacheValue: 'world',
+            CacheTTL: ttl.getTime() / 1000,
           };
           expect(params).toEqual({
             TableName,
-            Item
-          })
-          callback(null, Item)
+            Item,
+          });
+          callback(null, Item);
         });
 
         client = new AWS.DynamoDB.DocumentClient();
         keyValueCache = new DynamoDBCache(client);
-        await keyValueCache.set('hello', 'world')
+        await keyValueCache.set('hello', 'world');
         expect.assertions(1);
       });
-      
-      describe('with a TTL', () => {
-        afterEach(() => {
-          clear();
-        });
 
+      describe('with an explicit TTL', () => {
         it('performs no rounding when there are no milliseconds', async () => {
           const now = new Date(2019, 2, 20, 12, 0, 0);
-          const ttl = new Date(2019, 2, 20, 12, 5);
-          advanceTo(now)
+          const ttl = new Date(2019, 2, 20, 12, 10);
+          advanceTo(now);
           AWSMock.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
             const Item = {
               CacheKey: 'hello',
               CacheValue: 'world',
-              CacheTTL: ttl.getTime() / 1000
-            }
+              CacheTTL: ttl.getTime() / 1000,
+            };
             expect(params).toEqual({
               TableName,
-              Item
+              Item,
             });
-            callback(null, Item)
-           });
+            callback(null, Item);
+          });
 
           client = new AWS.DynamoDB.DocumentClient();
           keyValueCache = new DynamoDBCache(client);
-          await keyValueCache.set('hello', 'world', { ttl: 300 })
+          await keyValueCache.set('hello', 'world', { ttl: 600 });
           expect.assertions(1);
         });
 
         it('rounds down on partial seconds', async () => {
           const now = new Date(2019, 2, 20, 12, 0, 0, 999);
-          const ttl = new Date(2019, 2, 20, 12, 5);
-          advanceTo(now)
+          const ttl = new Date(2019, 2, 20, 12, 10);
+          advanceTo(now);
           AWSMock.mock('DynamoDB.DocumentClient', 'put', (params, callback) => {
             const Item = {
               CacheKey: 'hello',
               CacheValue: 'world',
-              CacheTTL: ttl.getTime() / 1000
-            }
+              CacheTTL: ttl.getTime() / 1000,
+            };
             expect(params).toEqual({
               TableName,
-              Item
+              Item,
             });
-            callback(null, Item)
-           });
+            callback(null, Item);
+          });
 
           client = new AWS.DynamoDB.DocumentClient();
           keyValueCache = new DynamoDBCache(client);
-          await keyValueCache.set('hello', 'world', { ttl: 300 })
+          await keyValueCache.set('hello', 'world', { ttl: 600 });
           expect.assertions(1);
         });
       });
@@ -142,20 +141,19 @@ describe("DynamoDBCache", () => {
       it('deletes an existing key', async () => {
         AWSMock.mock('DynamoDB.DocumentClient', 'delete', (params, callback) => {
           const Key = {
-            CacheKey: 'hello'
-          }
+            CacheKey: 'hello',
+          };
           expect(params).toEqual({
             TableName,
-            Key
+            Key,
           });
           callback(null, {});
         });
         client = new AWS.DynamoDB.DocumentClient();
         keyValueCache = new DynamoDBCache(client);
-        await keyValueCache.delete('hello')
+        await keyValueCache.delete('hello');
         expect.assertions(1);
       });
     });
   });
-
 });

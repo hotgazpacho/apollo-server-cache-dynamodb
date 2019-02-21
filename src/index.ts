@@ -6,6 +6,7 @@ const DEFAULT_TABLE_NAME = 'KeyValueCache';
 const DEFAULT_PARTITION_KEY = 'CacheKey';
 const DEFAULT_VALUE_ATTRIBUTE = 'CacheValue';
 const DEFAULT_TTL_ATTRIBUTE = 'CacheTTL';
+const DEFAULT_TTL = 300;
 
 // tslint:disable-next-line: interface-name
 export interface DynamoDBCacheOptions {
@@ -13,6 +14,7 @@ export interface DynamoDBCacheOptions {
   partitionKeyName?: string;
   valueAttribute?: string;
   ttlAttribute?: string;
+  defaultTTL?: number;
 }
 
 export default class DynamoDBCache implements KeyValueCache {
@@ -21,6 +23,7 @@ export default class DynamoDBCache implements KeyValueCache {
   private partitionKeyName: string;
   private valueAttribute: string;
   private ttlAttribute: string;
+  private defaultTTL: number;
 
   constructor(client: DynamoDB.DocumentClient, options: DynamoDBCacheOptions = {}) {
     this.client = client;
@@ -30,12 +33,14 @@ export default class DynamoDBCache implements KeyValueCache {
       partitionKeyName = DEFAULT_PARTITION_KEY,
       valueAttribute = DEFAULT_VALUE_ATTRIBUTE,
       ttlAttribute = DEFAULT_TTL_ATTRIBUTE,
+      defaultTTL = DEFAULT_TTL,
     } = options;
 
     this.tableName = tableName;
     this.partitionKeyName = partitionKeyName;
     this.valueAttribute = valueAttribute;
     this.ttlAttribute = ttlAttribute;
+    this.defaultTTL = defaultTTL;
   }
 
   public get(key: string): Promise<string> {
@@ -52,19 +57,16 @@ export default class DynamoDBCache implements KeyValueCache {
   }
 
   public set(key: string, value: string, options?: { ttl?: number }): Promise<void> {
+    const epochSeconds = this.calculateTTL(options);
     const params: DynamoDB.DocumentClient.PutItemInput = {
       Item: {
         [this.partitionKeyName]: key,
         [this.valueAttribute]: value,
+        [this.ttlAttribute]: epochSeconds,
       },
       TableName: this.tableName,
     };
-    if (options && options.ttl) {
-      const expiresAt = new Date();
-      expiresAt.setSeconds(expiresAt.getSeconds() + options.ttl);
-      const epochSeconds = Math.floor(expiresAt.getTime() / 1000);
-      params.Item[this.ttlAttribute] = epochSeconds;
-    }
+
     return this.client
       .put(params)
       .promise()
@@ -82,5 +84,13 @@ export default class DynamoDBCache implements KeyValueCache {
       .delete(params)
       .promise()
       .then(() => {});
+  }
+
+  private calculateTTL(options: { ttl?: number } = {}) {
+    const { ttl = this.defaultTTL } = options;
+    const expiresAt = new Date();
+    expiresAt.setSeconds(expiresAt.getSeconds() + ttl);
+    const epochSeconds = Math.floor(expiresAt.getTime() / 1000);
+    return epochSeconds;
   }
 }
