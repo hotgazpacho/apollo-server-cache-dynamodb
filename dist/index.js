@@ -1,0 +1,66 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const DEFAULT_TABLE_NAME = 'KeyValueCache';
+const DEFAULT_PARTITION_KEY = 'CacheKey';
+const DEFAULT_VALUE_ATTRIBUTE = 'CacheValue';
+const DEFAULT_TTL_ATTRIBUTE = 'CacheTTL';
+const DEFAULT_TTL = 300;
+class DynamoDBCache {
+    constructor(client, options = {}) {
+        this.client = client;
+        const { tableName = DEFAULT_TABLE_NAME, partitionKeyName = DEFAULT_PARTITION_KEY, valueAttribute = DEFAULT_VALUE_ATTRIBUTE, ttlAttribute = DEFAULT_TTL_ATTRIBUTE, defaultTTL = DEFAULT_TTL, } = options;
+        this.tableName = tableName;
+        this.partitionKeyName = partitionKeyName;
+        this.valueAttribute = valueAttribute;
+        this.ttlAttribute = ttlAttribute;
+        this.defaultTTL = defaultTTL;
+    }
+    get(key) {
+        const params = {
+            Key: {
+                [this.partitionKeyName]: key,
+            },
+            TableName: this.tableName,
+        };
+        return this.client
+            .get(params)
+            .promise()
+            .then(({ Item = {} }) => Item[this.valueAttribute]);
+    }
+    set(key, value, options) {
+        const epochSeconds = this.calculateTTL(options);
+        const params = {
+            Item: {
+                [this.partitionKeyName]: key,
+                [this.valueAttribute]: value,
+                [this.ttlAttribute]: epochSeconds,
+            },
+            TableName: this.tableName,
+        };
+        return this.client
+            .put(params)
+            .promise()
+            .then(() => { });
+    }
+    delete(key) {
+        const params = {
+            Key: {
+                [this.partitionKeyName]: key,
+            },
+            TableName: this.tableName,
+        };
+        return this.client
+            .delete(params)
+            .promise()
+            .then(() => { });
+    }
+    calculateTTL(options = {}) {
+        const { ttl = this.defaultTTL } = options;
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + ttl);
+        const epochSeconds = Math.floor(expiresAt.getTime() / 1000);
+        return epochSeconds;
+    }
+}
+exports.default = DynamoDBCache;
+//# sourceMappingURL=index.js.map

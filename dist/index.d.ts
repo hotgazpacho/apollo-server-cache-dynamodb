@@ -1,0 +1,25 @@
+import { KeyValueCache } from 'apollo-server-caching';
+import DynamoDB = require('aws-sdk/clients/dynamodb');
+export interface DynamoDBCacheOptions {
+    tableName?: string;
+    partitionKeyName?: string;
+    valueAttribute?: string;
+    ttlAttribute?: string;
+    defaultTTL?: number;
+}
+export default class DynamoDBCache implements KeyValueCache {
+    private client;
+    private tableName;
+    private partitionKeyName;
+    private valueAttribute;
+    private ttlAttribute;
+    private defaultTTL;
+    constructor(client: DynamoDB.DocumentClient, options?: DynamoDBCacheOptions);
+    get(key: string): Promise<string>;
+    set(key: string, value: string, options?: {
+        ttl?: number;
+    }): Promise<void>;
+    delete(key: string): Promise<boolean | void>;
+    private calculateTTL;
+}
+//# sourceMappingURL=index.d.ts.map
