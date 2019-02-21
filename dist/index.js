@@ -56,9 +56,7 @@ class DynamoDBCache {
     }
     calculateTTL(options = {}) {
         const { ttl = this.defaultTTL } = options;
-        const expiresAt = new Date();
-        expiresAt.setSeconds(expiresAt.getSeconds() + ttl);
-        const epochSeconds = Math.floor(expiresAt.getTime() / 1000);
+        const epochSeconds = Math.floor(Date.now() / 1000) + ttl;
         return epochSeconds;
     }
 }
