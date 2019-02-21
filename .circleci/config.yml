@@ -23,3 +23,8 @@ jobs:
           path: reports/junit
       - store_artifacts:
           path: reports/junit
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
