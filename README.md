@@ -1,5 +1,6 @@
 # apollo-server-cache-dynamodb
 
+[![npm version](https://badge.fury.io/js/apollo-server-cache-dynamodb.svg)](https://badge.fury.io/js/apollo-server-cache-dynamodb)
 [![CircleCI](https://circleci.com/gh/hotgazpacho/apollo-server-cache-dynamodb.svg?style=svg)](https://circleci.com/gh/hotgazpacho/apollo-server-cache-dynamodb)
 
 This package exports an implementation of `KeyValueCache` that allows using AWS DynamoDB as a backing store for resource caching in [Data Sources](https://www.apollographql.com/docs/apollo-server/v2/features/data-sources.html).
