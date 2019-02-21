@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./dist",
     "composite": true,
     "target": "es2016",
     "module": "commonjs",
@@ -23,6 +25,6 @@
       "__mocks__/*": ["__mocks__/*"]
     }
   },
-  "files": [],
-  "include": []
+  "include": ["src/**/*"],
+  "exclude": ["node_modules","src/**/*.test.*"]
 }

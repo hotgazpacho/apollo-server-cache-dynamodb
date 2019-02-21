@@ -2,9 +2,20 @@
   "name": "apollo-server-cache-dynamodb",
   "version": "1.0.0",
   "description": "DynamoDB implementation of KeyValueCache for apollo-server-caching",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
+  "engines": {
+    "node": ">=6"
+  },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint"
   },
   "repository": {
     "type": "git",
@@ -34,7 +45,10 @@
     "jest": "^23.0.0",
     "jest-date-mock": "^1.0.7",
     "jest-junit": "^6.3.0",
+    "prettier": "^1.16.4",
     "ts-jest": "^23.10.5",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.3"
   },
   "jest": {

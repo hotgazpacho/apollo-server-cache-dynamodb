@@ -1,5 +1,6 @@
-import { KeyValueCache } from "apollo-server-caching";
-import { DynamoDB } from "aws-sdk";
+// tslint:disable: no-empty
+import { KeyValueCache } from 'apollo-server-caching';
+import DynamoDB = require('aws-sdk/clients/dynamodb');
 
 export default class DynamoDBCache implements KeyValueCache {
   private client: DynamoDB.DocumentClient;
@@ -10,10 +11,10 @@ export default class DynamoDBCache implements KeyValueCache {
 
   constructor(
     client: DynamoDB.DocumentClient,
-    tableName: string = "KeyValueCache",
-    partitionKeyName: string = "CacheKey",
-    valueAttribute: string = "CacheValue",
-    ttlAttribute: string = "CacheTTL"
+    tableName: string = 'KeyValueCache',
+    partitionKeyName: string = 'CacheKey',
+    valueAttribute: string = 'CacheValue',
+    ttlAttribute: string = 'CacheTTL',
   ) {
     this.client = client;
     this.tableName = tableName;
@@ -22,12 +23,12 @@ export default class DynamoDBCache implements KeyValueCache {
     this.ttlAttribute = ttlAttribute;
   }
 
-  get(key: string): Promise<string> {
+  public get(key: string): Promise<string> {
     const params: DynamoDB.DocumentClient.GetItemInput = {
-      TableName: this.tableName,
       Key: {
-        [this.partitionKeyName]: key
-      }
+        [this.partitionKeyName]: key,
+      },
+      TableName: this.tableName,
     };
     return this.client
       .get(params)
@@ -35,13 +36,13 @@ export default class DynamoDBCache implements KeyValueCache {
       .then(({ Item = {} }) => Item[this.valueAttribute]);
   }
 
-  set(key: string, value: string, options?: { ttl?: number }): Promise<void> {
+  public set(key: string, value: string, options?: { ttl?: number }): Promise<void> {
     const params: DynamoDB.DocumentClient.PutItemInput = {
-      TableName: this.tableName,
       Item: {
         [this.partitionKeyName]: key,
-        [this.valueAttribute]: value
-      }
+        [this.valueAttribute]: value,
+      },
+      TableName: this.tableName,
     };
     if (options && options.ttl) {
       const expiresAt = new Date();
@@ -55,12 +56,12 @@ export default class DynamoDBCache implements KeyValueCache {
       .then(() => {});
   }
 
-  delete(key: string): Promise<boolean | void> {
+  public delete(key: string): Promise<boolean | void> {
     const params: DynamoDB.DocumentClient.DeleteItemInput = {
-      TableName: this.tableName,
       Key: {
-        [this.partitionKeyName]: key
-      }
+        [this.partitionKeyName]: key,
+      },
+      TableName: this.tableName,
     };
     return this.client
       .delete(params)
