@@ -58,6 +58,9 @@ export default class DynamoDBCache implements KeyValueCache {
 
   public set(key: string, value: string, options?: { ttl?: number }): Promise<void> {
     const epochSeconds = this.calculateTTL(options);
+    if (epochSeconds === undefined) {
+      return new Promise(resolve => resolve());
+    }
     const params: DynamoDB.DocumentClient.PutItemInput = {
       Item: {
         [this.partitionKeyName]: key,
@@ -88,6 +91,9 @@ export default class DynamoDBCache implements KeyValueCache {
 
   private calculateTTL(options: { ttl?: number } = {}) {
     const { ttl = this.defaultTTL } = options;
+    if (ttl === 0) {
+      return undefined;
+    }
     const epochSeconds = Math.floor(Date.now() / 1000) + ttl;
     return epochSeconds;
   }

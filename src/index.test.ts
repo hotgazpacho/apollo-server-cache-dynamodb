@@ -88,7 +88,7 @@ describe('DynamoDBCache', () => {
         expect.assertions(1);
       });
 
-      describe('with an explicit TTL', () => {
+      describe('with an explicit, non-zero TTL', () => {
         it('performs no rounding when there are no milliseconds', async () => {
           const now = new Date(2019, 2, 20, 12, 0, 0);
           const ttl = new Date(2019, 2, 20, 12, 10);
@@ -133,6 +133,21 @@ describe('DynamoDBCache', () => {
           keyValueCache = new DynamoDBCache(client);
           await keyValueCache.set('hello', 'world', { ttl: 600 });
           expect.assertions(1);
+        });
+      });
+
+      describe('with an explicit zero ttl', () => {
+        it('does not store the value in DynamoDB', async () => {
+          const now = new Date(2019, 2, 20, 12, 0, 0);
+          advanceTo(now);
+
+          const putStub = jest.fn((params, callback) => callback(false));
+          AWSMock.mock('DynamoDB.DocumentClient', 'put', putStub);
+
+          client = new AWS.DynamoDB.DocumentClient();
+          keyValueCache = new DynamoDBCache(client);
+          await keyValueCache.set('hello', 'world', { ttl: 0 });
+          expect(putStub).not.toHaveBeenCalled();
         });
       });
     });
