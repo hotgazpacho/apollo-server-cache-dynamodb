@@ -150,6 +150,21 @@ describe('DynamoDBCache', () => {
           expect(putStub).not.toHaveBeenCalled();
         });
       });
+
+      describe('with an explicit negative ttl', () => {
+        it('does not store the value in DynamoDB', async () => {
+          const now = new Date(2019, 2, 20, 12, 0, 0);
+          advanceTo(now);
+
+          const putStub = jest.fn((params, callback) => callback(false));
+          AWSMock.mock('DynamoDB.DocumentClient', 'put', putStub);
+
+          client = new AWS.DynamoDB.DocumentClient();
+          keyValueCache = new DynamoDBCache(client);
+          await keyValueCache.set('hello', 'world', { ttl: -1 });
+          expect(putStub).not.toHaveBeenCalled();
+        });
+      });
     });
 
     describe('delete', () => {

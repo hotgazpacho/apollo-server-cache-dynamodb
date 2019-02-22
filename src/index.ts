@@ -91,7 +91,7 @@ export default class DynamoDBCache implements KeyValueCache {
 
   private calculateTTL(options: { ttl?: number } = {}) {
     const { ttl = this.defaultTTL } = options;
-    if (ttl === 0) {
+    if (ttl <= 0) {
       return undefined;
     }
     const epochSeconds = Math.floor(Date.now() / 1000) + ttl;
