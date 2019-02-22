@@ -1,6 +1,6 @@
 {
   "name": "apollo-server-cache-dynamodb",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "DynamoDB implementation of KeyValueCache for apollo-server-caching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

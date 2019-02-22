@@ -29,6 +29,9 @@ class DynamoDBCache {
     }
     set(key, value, options) {
         const epochSeconds = this.calculateTTL(options);
+        if (epochSeconds === undefined) {
+            return new Promise(resolve => resolve());
+        }
         const params = {
             Item: {
                 [this.partitionKeyName]: key,
@@ -56,6 +59,9 @@ class DynamoDBCache {
     }
     calculateTTL(options = {}) {
         const { ttl = this.defaultTTL } = options;
+        if (ttl <= 0) {
+            return undefined;
+        }
         const epochSeconds = Math.floor(Date.now() / 1000) + ttl;
         return epochSeconds;
     }
