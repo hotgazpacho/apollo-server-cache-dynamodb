@@ -17,7 +17,7 @@ export interface DynamoDBCacheOptions {
   defaultTTL?: number;
 }
 
-export default class DynamoDBCache implements KeyValueCache {
+export class DynamoDBCache implements KeyValueCache {
   private client: DynamoDB.DocumentClient;
   private tableName: string;
   private partitionKeyName: string;
