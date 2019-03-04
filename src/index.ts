@@ -1,18 +1,28 @@
 // tslint:disable: no-empty
 import { KeyValueCache } from 'apollo-server-caching';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
+import DataLoader from 'dataloader';
 import { DynamoDBCacheOptions, IDynamoDBCacheOptions } from './DynamoDBCacheOptions';
 
 export default class DynamoDBCache implements KeyValueCache {
   private client: DynamoDB.DocumentClient;
   private options: IDynamoDBCacheOptions;
+  private dataloader: DataLoader<string, string> | undefined;
 
-  constructor(client: DynamoDB.DocumentClient, options: IDynamoDBCacheOptions = new DynamoDBCacheOptions()) {
+  constructor(
+    client: DynamoDB.DocumentClient,
+    options: IDynamoDBCacheOptions = new DynamoDBCacheOptions(),
+    dataloader?: DataLoader<string, string>,
+  ) {
     this.client = client;
     this.options = options;
+    this.dataloader = dataloader;
   }
 
   public async get(key: string): Promise<string> {
+    if (this.dataloader) {
+      return this.dataloader.load(key);
+    }
     const params: DynamoDB.DocumentClient.GetItemInput = {
       Key: {
         [this.options.partitionKeyName]: key,
@@ -42,7 +52,11 @@ export default class DynamoDBCache implements KeyValueCache {
     return this.client
       .put(params)
       .promise()
-      .then(() => {});
+      .then(() => {
+        if (this.dataloader) {
+          this.dataloader.clear(key).prime(key, value);
+        }
+      });
   }
 
   public async delete(key: string): Promise<boolean | void> {
@@ -55,7 +69,11 @@ export default class DynamoDBCache implements KeyValueCache {
     return this.client
       .delete(params)
       .promise()
-      .then(() => {});
+      .then(() => {
+        if (this.dataloader) {
+          this.dataloader.clear(key);
+        }
+      });
   }
 
   private calculateTTL(options: { ttl?: number } = {}) {

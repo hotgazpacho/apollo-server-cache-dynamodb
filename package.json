@@ -38,7 +38,8 @@
   "dependencies": {
     "apollo-server-caching": "^0.3.1",
     "apollo-server-env": "^2.2.0",
-    "aws-sdk": "2"
+    "aws-sdk": "2",
+    "dataloader": "^1.4.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.14",
