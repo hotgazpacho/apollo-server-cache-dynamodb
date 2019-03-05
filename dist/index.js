@@ -66,5 +66,5 @@ class DynamoDBCache {
         return epochSeconds;
     }
 }
-exports.default = DynamoDBCache;
+exports.DynamoDBCache = DynamoDBCache;
 //# sourceMappingURL=index.js.map
