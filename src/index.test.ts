@@ -2,7 +2,7 @@ import { KeyValueCache } from 'apollo-server-caching';
 import AWS = require('aws-sdk');
 import AWSMock = require('aws-sdk-mock');
 import { advanceTo, clear } from 'jest-date-mock';
-import DynamoDBCache from './index';
+import { DynamoDBCache } from './index';
 
 AWSMock.setSDKInstance(AWS);
 

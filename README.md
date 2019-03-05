@@ -9,7 +9,7 @@ This package exports an implementation of `KeyValueCache` that allows using AWS 
 
 ```js
 const DynamoDB = require('aws-sdk/clients/dynamodb');
-const DynamoDBCache = require('apollo-server-cache-dynamodb');
+const { DynamoDBCache } = require('apollo-server-cache-dynamodb');
 
 const client = new DynamoDB.DocumentClient();
 const cacheOpts = {
