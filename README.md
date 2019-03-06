@@ -5,6 +5,11 @@
 
 This package exports an implementation of `KeyValueCache` that allows using AWS DynamoDB as a backing store for resource caching in [Data Sources](https://www.apollographql.com/docs/apollo-server/v2/features/data-sources.html).
 
+## Important Note!
+
+`aws-sdk` is included as a `peerDependency` in order to help keep the package size small for deployment to AWS Lambda environments,
+where the sdk is available as part of the runtime.
+
 ## Usage
 
 ```js

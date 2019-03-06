@@ -37,12 +37,15 @@
   "homepage": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb#readme",
   "dependencies": {
     "apollo-server-caching": "^0.3.1",
-    "apollo-server-env": "^2.2.0",
+    "apollo-server-env": "^2.2.0"
+  },
+  "peerDependencies": {
     "aws-sdk": "2"
   },
   "devDependencies": {
     "@types/jest": "^23.3.14",
     "@types/node": "^11.9.4",
+    "aws-sdk": "2",
     "aws-sdk-mock": "^4.3.1",
     "eslint": "^5.14.0",
     "jest": "^23.0.0",
