@@ -25,7 +25,12 @@ class DynamoDBCache {
         return this.client
             .get(params)
             .promise()
-            .then(({ Item = {} }) => Item[this.valueAttribute]);
+            .then(({ Item = {} }) => {
+            if (!Item[this.ttlAttribute] || Item[this.ttlAttribute] >= Math.floor(Date.now() / 1000)) {
+                return Item[this.valueAttribute];
+            }
+            return undefined;
+        });
     }
     set(key, value, options) {
         const epochSeconds = this.calculateTTL(options);
