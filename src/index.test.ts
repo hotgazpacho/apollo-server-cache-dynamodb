@@ -58,6 +58,52 @@ describe('DynamoDBCache', () => {
         keyValueCache = new DynamoDBCache(client);
         expect(await keyValueCache.get('missing')).toBeUndefined();
       });
+      
+      it('can retrieve an existing key with ttl', async () => {
+        const now = new Date(2019, 2, 20, 12, 0, 0);
+        const ttl = new Date(2019, 2, 20, 12, 5);
+        advanceTo(now);
+        AWSMock.mock('DynamoDB.DocumentClient', 'get', (params, callback) => {
+          const Item = {
+            CacheKey: 'hello',
+            CacheValue: 'world',
+            CacheTTL: ttl.getTime() / 1000,
+          };
+          expect(params).toEqual({
+            TableName,
+            Key: {
+              CacheKey: Item.CacheKey,
+            },
+          });
+          callback(null, { Item });
+        });
+        client = new AWS.DynamoDB.DocumentClient();
+        keyValueCache = new DynamoDBCache(client);
+        expect(await keyValueCache.get('hello')).toBe('world');
+      });
+      
+      it('omits an existing key which ttl expired', async () => {
+        const now = new Date(2019, 2, 20, 12, 0, 0);
+        const ttl = new Date(2019, 2, 20, 11, 5);
+        advanceTo(now);
+        AWSMock.mock('DynamoDB.DocumentClient', 'get', (params, callback) => {
+          const Item = {
+            CacheKey: 'hello',
+            CacheValue: 'world',
+            CacheTTL: ttl.getTime() / 1000,
+          };
+          expect(params).toEqual({
+            TableName,
+            Key: {
+              CacheKey: Item.CacheKey,
+            },
+          });
+          callback(null, { Item });
+        });
+        client = new AWS.DynamoDB.DocumentClient();
+        keyValueCache = new DynamoDBCache(client);
+        expect(await keyValueCache.get('hello')).toBeUndefined();
+      });
     });
 
     describe('set', () => {

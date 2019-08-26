@@ -53,7 +53,14 @@ export class DynamoDBCache implements KeyValueCache {
     return this.client
       .get(params)
       .promise()
-      .then(({ Item = {} }) => Item[this.valueAttribute]);
+      .then(({ Item = {} }) => {
+        // since DynamoDB itself doesnt really clean up items with TTL in a reliable, timely fashion
+        // we need to manually check if the cached value should still be alive
+        if (!Item[this.ttlAttribute] || Item[this.ttlAttribute] >= Math.floor(Date.now() / 1000)) {
+          return Item[this.valueAttribute];
+        }
+        return undefined;
+      });
   }
 
   public set(key: string, value: string, options?: { ttl?: number }): Promise<void> {
