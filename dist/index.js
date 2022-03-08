@@ -4,22 +4,23 @@ const DEFAULT_TABLE_NAME = 'KeyValueCache';
 const DEFAULT_PARTITION_KEY = 'CacheKey';
 const DEFAULT_VALUE_ATTRIBUTE = 'CacheValue';
 const DEFAULT_TTL_ATTRIBUTE = 'CacheTTL';
+const DEFAULT_SORT_KEY_VALUE = 'apq';
 const DEFAULT_TTL = 300;
 class DynamoDBCache {
     constructor(client, options = {}) {
         this.client = client;
-        const { tableName = DEFAULT_TABLE_NAME, partitionKeyName = DEFAULT_PARTITION_KEY, valueAttribute = DEFAULT_VALUE_ATTRIBUTE, ttlAttribute = DEFAULT_TTL_ATTRIBUTE, defaultTTL = DEFAULT_TTL, } = options;
+        const { tableName = DEFAULT_TABLE_NAME, partitionKeyName = DEFAULT_PARTITION_KEY, sortKeyName, sortKeyValue = DEFAULT_SORT_KEY_VALUE, valueAttribute = DEFAULT_VALUE_ATTRIBUTE, ttlAttribute = DEFAULT_TTL_ATTRIBUTE, defaultTTL = DEFAULT_TTL, } = options;
         this.tableName = tableName;
         this.partitionKeyName = partitionKeyName;
+        this.sortKeyName = sortKeyName;
+        this.sortKeyValue = sortKeyValue;
         this.valueAttribute = valueAttribute;
         this.ttlAttribute = ttlAttribute;
         this.defaultTTL = defaultTTL;
     }
     get(key) {
         const params = {
-            Key: {
-                [this.partitionKeyName]: key,
-            },
+            Key: Object.assign({ [this.partitionKeyName]: key }, (this.sortKeyName ? { [this.sortKeyName]: this.sortKeyValue } : {})),
             TableName: this.tableName,
         };
         return this.client
@@ -38,11 +39,7 @@ class DynamoDBCache {
             return new Promise(resolve => resolve());
         }
         const params = {
-            Item: {
-                [this.partitionKeyName]: key,
-                [this.valueAttribute]: value,
-                [this.ttlAttribute]: epochSeconds,
-            },
+            Item: Object.assign({ [this.partitionKeyName]: key, [this.valueAttribute]: value, [this.ttlAttribute]: epochSeconds }, (this.sortKeyName ? { [this.sortKeyName]: this.sortKeyValue } : {})),
             TableName: this.tableName,
         };
         return this.client
@@ -52,9 +49,7 @@ class DynamoDBCache {
     }
     delete(key) {
         const params = {
-            Key: {
-                [this.partitionKeyName]: key,
-            },
+            Key: Object.assign({ [this.partitionKeyName]: key }, (this.sortKeyName ? { [this.sortKeyName]: this.sortKeyValue } : {})),
             TableName: this.tableName,
         };
         return this.client

@@ -3,6 +3,8 @@ import DynamoDB = require('aws-sdk/clients/dynamodb');
 export interface DynamoDBCacheOptions {
     tableName?: string;
     partitionKeyName?: string;
+    sortKeyName?: string;
+    sortKeyValue?: string;
     valueAttribute?: string;
     ttlAttribute?: string;
     defaultTTL?: number;
@@ -11,6 +13,8 @@ export declare class DynamoDBCache implements KeyValueCache {
     private client;
     private tableName;
     private partitionKeyName;
+    private sortKeyName;
+    private sortKeyValue;
     private valueAttribute;
     private ttlAttribute;
     private defaultTTL;
