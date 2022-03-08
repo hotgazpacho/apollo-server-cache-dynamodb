@@ -46,10 +46,10 @@
     "@types/jest": "^23.3.14",
     "@types/node": "^11.9.4",
     "aws-sdk": "2",
-    "aws-sdk-mock": "^4.3.1",
     "eslint": "^5.14.0",
     "jest": "^25.0.0",
     "jest-date-mock": "^1.0.7",
+    "jest-dynalite": "^3.4.4",
     "jest-junit": "^6.3.0",
     "prettier": "^1.16.4",
     "ts-jest": "^23.10.5",
@@ -67,7 +67,8 @@
       "jest-junit"
     ],
     "setupFiles": [
-      "jest-date-mock"
+      "jest-date-mock",
+      "<rootDir>/setup-before-env.ts"
     ],
     "testEnvironment": "node"
   }
