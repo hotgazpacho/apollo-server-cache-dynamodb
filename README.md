@@ -7,16 +7,16 @@ This package exports an implementation of `KeyValueCache` that allows using AWS 
 
 ## Important Note!
 
-`aws-sdk` is included as a `peerDependency` in order to help keep the package size small for deployment to AWS Lambda environments,
+`@aws-sdk/client-dynamodb` is included as a `peerDependency` in order to help keep the package size small for deployment to AWS Lambda environments,
 where the sdk is available as part of the runtime.
 
 ## Usage
 
 ```js
-const DynamoDB = require('aws-sdk/clients/dynamodb');
+const DynamoDBClient = require('@aws-sdk/client-dynamodb');
 const { DynamoDBCache } = require('apollo-server-cache-dynamodb');
 
-const client = new DynamoDB.DocumentClient();
+const client = new DynamoDBClient();
 const cacheOpts = {
   tableName: 'KeyValueCache', // default, table name
   partitionKeyName: 'CacheKey', // default, partition key, must be type S
