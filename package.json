@@ -36,8 +36,7 @@
   },
   "homepage": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb#readme",
   "dependencies": {
-    "apollo-server-caching": "^3.3.0",
-    "apollo-server-env": "^4.2.1"
+    "@apollo/utils.keyvaluecache": "^1.0.2"
   },
   "peerDependencies": {
     "aws-sdk": "2"
