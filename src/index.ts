@@ -1,5 +1,5 @@
 /* eslint-disable no-empty,no-empty-function,@typescript-eslint/no-empty-function */
-import { KeyValueCache } from 'apollo-server-caching';
+import { KeyValueCache } from '@apollo/utils.keyvaluecache';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
 const DEFAULT_TABLE_NAME = 'KeyValueCache';

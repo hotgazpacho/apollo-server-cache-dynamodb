@@ -1,6 +1,6 @@
-import { KeyValueCache } from 'apollo-server-caching';
-import AWS = require('aws-sdk');
-import AWSMock = require('aws-sdk-mock');
+import { KeyValueCache } from '@apollo/utils.keyvaluecache';
+import AWS from 'aws-sdk';
+import AWSMock from 'aws-sdk-mock';
 import { advanceTo, clear } from 'jest-date-mock';
 import { DynamoDBCache } from './index';
 
@@ -58,7 +58,7 @@ describe('DynamoDBCache', () => {
         keyValueCache = new DynamoDBCache(client);
         expect(await keyValueCache.get('missing')).toBeUndefined();
       });
-      
+
       it('can retrieve an existing key with ttl', async () => {
         const now = new Date(2019, 2, 20, 12, 0, 0);
         const ttl = new Date(2019, 2, 20, 12, 5);
@@ -81,7 +81,7 @@ describe('DynamoDBCache', () => {
         keyValueCache = new DynamoDBCache(client);
         expect(await keyValueCache.get('hello')).toBe('world');
       });
-      
+
       it('omits an existing key which ttl expired', async () => {
         const now = new Date(2019, 2, 20, 12, 0, 0);
         const ttl = new Date(2019, 2, 20, 11, 5);
