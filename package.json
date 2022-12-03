@@ -52,7 +52,7 @@
     "jest-date-mock": "^1.0.7",
     "jest-junit": "^6.3.0",
     "prettier": "^1.16.4",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^29.0.3",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.3.3"
