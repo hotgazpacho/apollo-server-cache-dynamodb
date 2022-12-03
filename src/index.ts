@@ -1,4 +1,4 @@
-// tslint:disable: no-empty
+/* eslint-disable no-empty,no-empty-function,@typescript-eslint/no-empty-function */
 import { KeyValueCache } from 'apollo-server-caching';
 import DynamoDB = require('aws-sdk/clients/dynamodb');
 
@@ -8,7 +8,7 @@ const DEFAULT_VALUE_ATTRIBUTE = 'CacheValue';
 const DEFAULT_TTL_ATTRIBUTE = 'CacheTTL';
 const DEFAULT_TTL = 300;
 
-// tslint:disable-next-line: interface-name
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface DynamoDBCacheOptions {
   tableName?: string;
   partitionKeyName?: string;
@@ -80,7 +80,7 @@ export class DynamoDBCache implements KeyValueCache {
     return this.client
       .put(params)
       .promise()
-      .then(() => {});
+      .then(() => { });
   }
 
   public delete(key: string): Promise<boolean | void> {
@@ -93,7 +93,7 @@ export class DynamoDBCache implements KeyValueCache {
     return this.client
       .delete(params)
       .promise()
-      .then(() => {});
+      .then(() => { });
   }
 
   private calculateTTL(options: { ttl?: number } = {}) {
