@@ -36,17 +36,19 @@
   },
   "homepage": "https://github.com/hotgazpacho/apollo-server-cache-dynamodb#readme",
   "dependencies": {
-    "@apollo/utils.keyvaluecache": "^1.0.2"
+    "apollo-server-caching": "^3.3.0"
   },
   "peerDependencies": {
-    "aws-sdk": "2"
+    "@aws-sdk/client-dynamodb": "3"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.194.0",
     "@types/jest": "^29.2.3",
     "@types/node": "^16.18.1",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "aws-sdk": "2",
+    "aws-sdk-client-mock": "^2.0.0",
     "aws-sdk-mock": "^5.8.0",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^8.5.0",
